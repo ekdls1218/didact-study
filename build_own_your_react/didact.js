@@ -71,6 +71,28 @@ function render(element, container) {
     container.appendChild(dom)
 }
 
+// 동시성 모드, 렌더링 도중 끼어들 수 있도록 구현
+let nextUnitOfWork = null // 첫번째 작업 단위
+// deadline: 다시 브라우저에서 제어를 가져갈 때까지 얼마나 걸리는지 체크
+function workLoop(deadline) {
+    let shouldYield = false
+    while (nextUnitOfWork && !shouldYield) {
+        // 다음 작업 단위 반환
+        nextUnitOfWork = performUnitOfWork(
+            nextUnitOfWork
+        )
+        shouldYield = deadline.timeRemaining() < 1
+    }
+    requestIdleCallback(workLoop)
+}
+
+// 메인 스레드가 대기 상태일 때 브라우저가 콜백을 실행
+requestIdleCallback(workLoop)
+
+function performUnitOfWork(nextUnitOfWork) {
+
+}
+
 const Didact = {
     createElement,
     render,
