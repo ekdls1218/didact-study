@@ -1,49 +1,61 @@
 // 리액트 코드 -> js 코드
 /**
-- 리액트 엘리먼트 정의
-const element = <h1 title="foo">Hello</h1>
-*/
+ * 리액트 코드
+const element = (
+    <div id="foo">
+        <a>bar</a>
+        <b />
+    </div>
+)
 
-// jsx -> js 변환 시, 인자(태그 이름, props, children)를 받아 createElement 함수를 호출하여 객체 생성
-// const element = React.createElement(
-//     "h1",
-//     {title: "foo"},
-//     "Hello"
-// )
+// jxs -> js, createElement함수를 호출하여 엘리먼트 생성
+const element = React.createElement(
+    "div", 
+    {id: "foo"}, 
+    React.createElement("a", null, "bar"),
+    React.createElement("b")
+)
 
-// 생성된 객체
-const element = {
-    type: "h1",
+const container = document.getElementById("root")
+ReactDOM.render(element, container)
+ */
+
+// 엘리먼트 객체 생성
+function createElement(type, props, ...children) {
+  return {
+    type,
     props: {
-        title: "foo",
-        children: "Hello",
+      ...props,
+      children: children.map((child) =>
+        typeof child === "object" ? child : createTextElement(child)
+      ),
     },
+  };
 }
 
+// children이 객체가 아닌 기본 타입의 값(string, number)일 때
+function createTextElement (text) {
+    return {
+        type: "TEXT_ELEMENT",
+        props: {
+            nodeValue: text,
+            children: [],
+        }
+    }
+}
 
-/** 
-- 변수에 DOM으로부터 루트 DOM 노드 할당
+const Didact = {
+    createElement,
+}
+
+// jsx 사용
+/**@jsx Didact.createElement */
+const element = (
+    <div id="foo">
+        <a>bar</a>
+        <b />
+    </div>
+)
+
 const container = document.getElementById("root")
-*/
-const container = document.getElementById("root");
-
-
-/** 
-- 컨테이너 안에 리액트 엘리먼트 생성, reder는 리액트가 DOM을 변경하는 지점
-ReactDOM.render(element, container);
-*/
-
-// 타입을 이용해 노드(DOM 엘리먼트) 생성(타입은 "h1")
-const node = document.createElement(element.type)
-// 모든 리액트 엘리먼트 props들을 노드(DOM 엘리먼트)에 할당
-node["title"] = element.props.title
-console.log(node);
-
-// 자식노드 생성
-const text = document.createTextNode("")
-text["nodeValue"] = element.props.children
-
-// node에 text 추가
-node.appendChild(text)
-// container에 node 추가
-container.appendChild(node)
+ReactDOM.render(element, container)
