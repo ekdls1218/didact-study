@@ -119,6 +119,8 @@ function performUnitOfWork(fiber) {
 
     if (index == 0) { 
       fiber.child = newFiber // 부모 fiber에 첫번째 자식으로 연결
+    } else {
+        prevSibling.sibling = newFiber // 형제자매로 연결
     }
 
     prevSibling = newFiber // 형제 연결 준비
