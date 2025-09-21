@@ -52,18 +52,11 @@ function createTextElement(text) {
 // Dom 노드 생성
 function createDom(fiber) {
   const dom =
-    element.type == "TEXT_ELEMENT" // 타입이 TEXT_ELEMENT인 경우
+    fiber.type == "TEXT_ELEMENT" // 타입이 TEXT_ELEMENT인 경우
       ? document.createTextNode("") // 텍스트 노드 생성
-      : document.createElement(element.type); // element 타입으로 노드 생성
+      : document.createElement(fiber.type); // element 타입으로 노드 생성
 
-  // 노드에 element 속성 부여
-  const isProperty = (key) => key !== "children"; //children 빼고 나머지 props만 골라내는 함수
-  Object.keys(element.props) // props의 key 뽑기
-    .filter(isProperty) // 필러팅 함수 적용
-    .forEach((name) => {
-      // 필터링된 속성들 돌면서 노드에 속성 부여
-      dom[name] = element.props[name];
-    });
+  updateDom(dom, {}, fiber.props);
 
   return dom;
 }
@@ -151,7 +144,7 @@ function commitWork(fiber) {
   const domParent = fiber.parent.dom; // 현재 fiber의 부모 DOM
   
   if(fiber.effectTag === "PLACEMENT" && fiber.dom != null) { // 생성 태그를 가지면서 fiber의 dom노드가 있을 때
-    domParent.appendChilde(fiber.dom); // 현재 fiber의 DOM 노드를 부모에 추가
+    domParent.appendChild(fiber.dom); // 현재 fiber의 DOM 노드를 부모에 추가
   } else if (fiber.effectTag === "UPDATE" && fiber.dom != null) { // 업뎃 태그를 가지면서 fiber의 dom노드가 있을 때
     updateDom(
       fiber.dom,
@@ -275,9 +268,9 @@ function reconcileChildren(wipFiber, elements) {
       oldFiber = oldFiber.sibling
     }
 
-    if (index == 0) {
-      fiber.child = newFiber; // 부모 fiber에 첫번째 자식으로 연결
-    } else {
+    if (index === 0) {
+      wipFiber.child = newFiber; // 부모 fiber에 첫번째 자식으로 연결
+    } else if (element) {
         prevSibling.sibling = newFiber // 형제자매로 연결
     }
 

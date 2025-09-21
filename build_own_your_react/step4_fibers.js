@@ -52,17 +52,17 @@ function createTextElement(text) {
 // Dom 노드 생성
 function createDom(fiber) {
   const dom =
-    element.type == "TEXT_ELEMENT" // 타입이 TEXT_ELEMENT인 경우
+    fiber.type == "TEXT_ELEMENT" // 타입이 TEXT_ELEMENT인 경우
       ? document.createTextNode("") // 텍스트 노드 생성
-      : document.createElement(element.type); // element 타입으로 노드 생성
+      : document.createElement(fiber.type); // element 타입으로 노드 생성
 
   // 노드에 element 속성 부여
   const isProperty = (key) => key !== "children"; //children 빼고 나머지 props만 골라내는 함수
-  Object.keys(element.props) // props의 key 뽑기
+  Object.keys(fiber.props) // props의 key 뽑기
     .filter(isProperty) // 필러팅 함수 적용
     .forEach((name) => {
       // 필터링된 속성들 돌면서 노드에 속성 부여
-      dom[name] = element.props[name];
+      dom[name] = fiber.props[name];
     });
 
   return dom;

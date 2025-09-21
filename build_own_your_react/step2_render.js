@@ -65,7 +65,6 @@ function render(element, container) {
 
   // 각각의 자식들 재귀적으로 수행
   element.props.children.forEach((child) => render(child, dom));
-
   container.appendChild(dom); // 컨테이너에 추가
 }
 
